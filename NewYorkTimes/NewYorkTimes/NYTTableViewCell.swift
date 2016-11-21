@@ -17,10 +17,10 @@ class NYTTableViewCell: UITableViewCell {
     
     var headlines: TopStory? {
         didSet {
-            headlineLabel?.text = headlines?.headline
-            abstractLabel?.text = headlines?.articlePreview
-            bylineLabel?.text = headlines?.author
-            dateLabel?.text = headlines?.date
+            headlineLabel.text = headlines?.headline
+            abstractLabel.text = headlines?.articlePreview
+            bylineLabel.text = headlines?.author
+            dateLabel.text = headlines?.date
         }
     }
 }
