@@ -33,28 +33,13 @@ class TopStory {
                 return nil
             }
                 for dict in results {
-                    guard let headline = dict["title"] as? String else {
-                        print("Error on headline")
-                        continue
-                    }
-                    guard let section = dict["subsection"] as? String else {
-                        print("Error on section")
-                        continue
-                    }
-                    guard let articlePreview = dict["abstract"] as? String else {
-                        print("Error on preview")
-                        continue
-                    }
-                    guard let openURL = dict["url"] as? String else {
-                        print("Error on url")
-                        continue
-                    }
-                    guard let author = dict["byline"] as? String else {
-                        print("Error on byline")
-                        continue
-                    }
-                    guard let date = dict["updated_date"] as? String else {
-                        print("Error on date")
+                    guard let headline = dict["title"] as? String,
+                    let section = dict["subsection"] as? String,
+                    let articlePreview = dict["abstract"] as? String,
+                    let openURL = dict["url"] as? String,
+                    let author = dict["byline"] as? String,
+                    let date = dict["updated_date"] as? String else {
+                        print("Error parsing data")
                         continue
                     }
                     let storyDict: TopStory = TopStory(headline: headline, section: section, articlePreview: articlePreview, openURL: openURL, author: author, date: date)
