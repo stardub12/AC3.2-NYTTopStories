@@ -40,11 +40,8 @@ class NYTTableViewController: UITableViewController {
         cell.headlines = stories[indexPath.row]
         return cell
     }
-    
-  
  // MARK: - UITableViewDelegate
- 
- override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     let index = stories[indexPath.row]
     let url: URL = URL(string: index.openURL!)!
     UIApplication.shared.open(url, options: [:], completionHandler: nil)

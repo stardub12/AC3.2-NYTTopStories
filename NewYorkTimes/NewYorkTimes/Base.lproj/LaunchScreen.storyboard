@@ -20,9 +20,11 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="NYT" translatesAutoresizingMaskIntoConstraints="NO" id="xY7-hb-x5Z"/>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PREVIEW" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="11S-kL-DpL">
-                                <fontDescription key="fontDescription" name="Avenir-Light" family="Avenir" pointSize="25"/>
-                                <nil key="textColor"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="with C4Q" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7X4-PH-jvu">
+                                <frame key="frameInset" minX="16" minY="550" width="343" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" weight="ultraLight" pointSize="12"/>
+                                <color key="textColor" red="0.50196081400000003" green="0.50196081400000003" blue="0.50196081400000003" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
@@ -31,10 +33,6 @@
                             <constraint firstItem="xY7-hb-x5Z" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leadingMargin" id="08t-s2-7ah"/>
                             <constraint firstAttribute="trailingMargin" secondItem="xY7-hb-x5Z" secondAttribute="trailing" id="88y-L5-hIq"/>
                             <constraint firstItem="xY7-hb-x5Z" firstAttribute="top" secondItem="Llm-lL-Icb" secondAttribute="bottom" constant="65" id="LLx-2y-fun"/>
-                            <constraint firstItem="11S-kL-DpL" firstAttribute="top" secondItem="xY7-hb-x5Z" secondAttribute="bottom" id="M3b-Kg-XHJ"/>
-                            <constraint firstItem="11S-kL-DpL" firstAttribute="top" secondItem="Llm-lL-Icb" secondAttribute="bottom" constant="221" id="MfK-uf-HEt"/>
-                            <constraint firstItem="11S-kL-DpL" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leadingMargin" id="gPt-u6-PFS"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="11S-kL-DpL" secondAttribute="trailing" id="l22-7B-iRE"/>
                             <constraint firstItem="xY7-hb-x5Z" firstAttribute="top" secondItem="Llm-lL-Icb" secondAttribute="bottom" constant="65" id="qJo-Fs-X2H"/>
                         </constraints>
                     </view>
