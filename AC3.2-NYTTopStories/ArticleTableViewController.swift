@@ -11,6 +11,17 @@ import UIKit
 class ArticleTableViewController: UITableViewController, UITextFieldDelegate {
     var allArticles = [Article]()
     var articles = [Article]()
+    
+    var sectionTitles: [String] {
+        get {
+            var sectionSet = Set<String>()
+            for article in articles {
+                sectionSet.insert(article.section)
+            }
+            return Array(sectionSet).sorted()
+        }
+    }
+    
     let identifier = "articleCell"
     
     override func viewDidLoad() {
@@ -42,24 +53,29 @@ class ArticleTableViewController: UITableViewController, UITextFieldDelegate {
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 1
+        return self.sectionTitles.count
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return self.articles.count
+        let sectionPredicate = NSPredicate(format: "section = %@", self.sectionTitles[section])
+        return self.articles.filter { sectionPredicate.evaluate(with: $0)}.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: self.identifier, for: indexPath) as! ArticleTableViewCell
-        let article = articles[indexPath.row]
+        
+        let sectionPredicate = NSPredicate(format: "section = %@", self.sectionTitles[indexPath.section])
+        let article = self.articles.filter { sectionPredicate.evaluate(with: $0)}[indexPath.row]
         
         cell.titleLabel.text = article.title
         cell.abstractLabel.text = article.abstract + "PER: " + article.per_facet.joined(separator: " ")
         cell.bylineAndDateLabel.text = "\(article.byline)\n\(article.published_date)"
         
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return self.sectionTitles[section]
     }
     
     func applyPredicate(search: String) {
