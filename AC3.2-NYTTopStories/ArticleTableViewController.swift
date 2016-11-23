@@ -8,9 +8,10 @@
 
 import UIKit
 
-class ArticleTableViewController: UITableViewController, UITextFieldDelegate {
+class ArticleTableViewController: UITableViewController, UISearchBarDelegate {
     var allArticles = [Article]()
     var articles = [Article]()
+    let defaultTitle = "Home"
     
     var sectionTitles: [String] {
         get {
@@ -27,11 +28,11 @@ class ArticleTableViewController: UITableViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.title = "Home"
+        self.title = self.defaultTitle
         
         self.tableView.estimatedRowHeight = 200
         self.tableView.rowHeight = UITableViewAutomaticDimension
-
+        
         APIRequestManager.manager.getData(endPoint: "https://api.nytimes.com/svc/topstories/v2/home.json?api-key=f41c1b23419a4f55b613d0a243ed3243")  { (data: Data?) in
             if let validData = data {
                 if let jsonData = try? JSONSerialization.jsonObject(with: validData, options:[]) {
@@ -86,17 +87,39 @@ class ArticleTableViewController: UITableViewController, UITextFieldDelegate {
         self.tableView.reloadData()
     }
     
-    // MARK: - TextField Delegate
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        if let text = textField.text {
-            if text.characters.count > 0 {
-                applyPredicate(search: text)
-            }
-            else {
-                self.articles = self.allArticles
-                self.tableView.reloadData()
-            }
+    func search(_ text: String) {
+        if text.characters.count > 0 {
+            applyPredicate(search: text)
+            self.title = text
         }
-        return true
+        else {
+            self.articles = self.allArticles
+            self.tableView.reloadData()
+            self.title = self.defaultTitle
+        }
+    }
+
+    // MARK: - UISearchBar Delegate
+
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        if let text = searchBar.text {
+            self.search(text)
+        }
+        searchBar.showsCancelButton = true
+    }
+    
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        searchBar.showsCancelButton = true
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        if let text = searchBar.text {
+            self.search(text)
+        }
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        self.search("")
+        searchBar.showsCancelButton = false
     }
 }
