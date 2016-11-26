@@ -13,6 +13,10 @@ class ArticleTableViewController: UITableViewController, UISearchBarDelegate {
     var articles = [Article]()
     let defaultTitle = "Home"
     
+    // I like keeping a separate "model" variable
+    // but it would be have been an option to query the state of the switch
+    var mergeSections = true
+    
     var sectionTitles: [String] {
         get {
             var sectionSet = Set<String>()
@@ -69,7 +73,14 @@ class ArticleTableViewController: UITableViewController, UISearchBarDelegate {
         let article = self.articles.filter { sectionPredicate.evaluate(with: $0)}[indexPath.row]
         
         cell.titleLabel.text = article.title
-        cell.abstractLabel.text = article.abstract + "PER: " + article.per_facet.joined(separator: " ")
+        
+        if article.per_facet.count > 0 {
+          cell.abstractLabel.text = article.abstract + " " + article.per_facet.joined(separator: " ")
+        }
+        else {
+            cell.abstractLabel.text = article.abstract
+        }
+        
         cell.bylineAndDateLabel.text = "\(article.byline)\n\(article.published_date)"
         
         return cell
@@ -80,8 +91,7 @@ class ArticleTableViewController: UITableViewController, UISearchBarDelegate {
     }
     
     func applyPredicate(search: String) {
-        //let predicate = NSPredicate(format:"abstract contains[c] %@ or title contains[c] %@", search, search)
-        let predicate = NSPredicate(format:"ANY per_facet contains[c] %@", search) // Trump, Donald J
+        let predicate = NSPredicate(format:"ANY per_facet contains[c] %@", search, search, search)
         
         self.articles = self.allArticles.filter { predicate.evaluate(with: $0) }
         self.tableView.reloadData()
@@ -121,5 +131,16 @@ class ArticleTableViewController: UITableViewController, UISearchBarDelegate {
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         self.search("")
         searchBar.showsCancelButton = false
+    }
+    
+    @IBAction func mergeSectionSwitchChanged(_ sender: UISwitch) {
+        if sender.isOn {
+            print("Merge 3 api call together into sections found")
+            self.mergeSections = true
+        }
+        else {
+            print("Create sections based on the originating API endpoint")
+            self.mergeSections = false
+        }
     }
 }

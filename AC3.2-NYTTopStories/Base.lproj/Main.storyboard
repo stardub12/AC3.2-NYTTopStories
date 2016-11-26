@@ -80,6 +80,15 @@
                     </tableView>
                     <navigationItem key="navigationItem" id="AhV-sF-cGY">
                         <nil key="title"/>
+                        <barButtonItem key="rightBarButtonItem" style="plain" id="qp9-L9-ega">
+                            <switch key="customView" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="5xl-Co-Nci">
+                                <rect key="frame" x="310" y="6" width="51" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <connections>
+                                    <action selector="mergeSectionSwitchChanged:" destination="uLA-xy-6l6" eventType="valueChanged" id="Agb-Vq-Dtf"/>
+                                </connections>
+                            </switch>
+                        </barButtonItem>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="f7J-8i-cFK" userLabel="First Responder" sceneMemberID="firstResponder"/>
