@@ -12,6 +12,10 @@ class ArticleTableViewController: UITableViewController, UISearchBarDelegate {
     var allArticles = [Article]()
     var articles = [Article]()
     let defaultTitle = "Home"
+//    let homeEndpoint = "https://api.nytimes.com/svc/topstories/v2/home.json?api-key=f41c1b23419a4f55b613d0a243ed3243"
+    //    let artsEndpoint = "http://api.nytimes.com/svc/topstories/v2/arts.json?api-key=4eb9c9ccae8148b39c2e02cd90ff1e39"
+    //    let sportsEndpoint = "http://api.nytimes.com/svc/topstories/v2/sports.json?api-key=4eb9c9ccae8148b39c2e02cd90ff1e39"
+    var endpoint = ["home", "arts", "sports"]
     
     // I like keeping a separate "model" variable
     // but it would be have been an option to query the state of the switch
@@ -37,53 +41,75 @@ class ArticleTableViewController: UITableViewController, UISearchBarDelegate {
         self.tableView.estimatedRowHeight = 200
         self.tableView.rowHeight = UITableViewAutomaticDimension
         
-        APIRequestManager.manager.getData(endPoint: "https://api.nytimes.com/svc/topstories/v2/home.json?api-key=f41c1b23419a4f55b613d0a243ed3243")  { (data: Data?) in
-            if let validData = data {
-                if let jsonData = try? JSONSerialization.jsonObject(with: validData, options:[]) {
-                    if let wholeDict = jsonData as? [String:Any],
-                        let records = wholeDict["results"] as? [[String:Any]] {
-                        self.allArticles = Article.parseArticles(from: records)
-                        
-                        // start off with everything
-                        self.articles = self.allArticles
-                        DispatchQueue.main.async {
-                            self.tableView.reloadData()
+        for index in self.endpoint { //add keywords into the url
+            APIRequestManager.manager.getData(endPoint: "https://api.nytimes.com/svc/topstories/v2/\(index).json?api-key=f41c1b23419a4f55b613d0a243ed3243")  { (data: Data?) in
+                if let validData = data {
+                    if let jsonData = try? JSONSerialization.jsonObject(with: validData, options:[]) {
+                        if let wholeDict = jsonData as? [String:Any],
+                            let records = wholeDict["results"] as? [[String:Any]] {
+                            self.allArticles.append(contentsOf: Article.parseArticles(from: records, filtered: index))
+                            
+                            // start off with everything
+                            self.articles = self.allArticles
+                            DispatchQueue.main.async {
+                                self.tableView.reloadData()
+                            }
                         }
                     }
                 }
             }
         }
     }
-
+    
     // MARK: - Table view data source
-
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return self.sectionTitles.count
+        //        return self.sectionTitles.count
+        if mergeSections == true { //switch toggle
+            return self.sectionTitles.count
+        } else {
+            return endpoint.count
+        }
     }
-
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let sectionPredicate = NSPredicate(format: "section = %@", self.sectionTitles[section])
-        return self.articles.filter { sectionPredicate.evaluate(with: $0)}.count
+        //        let sectionPredicate = NSPredicate(format: "section = %@", self.sectionTitles[section])
+        //        return self.articles.filter { sectionPredicate.evaluate(with: $0)}.count
+        if mergeSections == true {
+            let sectionPredicate = NSPredicate(format: "section = %@", self.sectionTitles[section])
+            return self.articles.filter { sectionPredicate.evaluate(with: $0)}.count
+        } else {
+            let sectionPredicate = NSPredicate(format: "filtered = %@", self.endpoint[section])
+            return self.articles.filter { sectionPredicate.evaluate(with: $0)}.count
+        }
     }
-
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: self.identifier, for: indexPath) as! ArticleTableViewCell
         
-        let sectionPredicate = NSPredicate(format: "section = %@", self.sectionTitles[indexPath.section])
-        let article = self.articles.filter { sectionPredicate.evaluate(with: $0)}[indexPath.row]
-        
-        cell.titleLabel.text = article.title
-        
-        if article.per_facet.count > 0 {
-          cell.abstractLabel.text = article.abstract + " " + article.per_facet.joined(separator: " ")
-        }
-        else {
-            cell.abstractLabel.text = article.abstract
-        }
-        
-        cell.bylineAndDateLabel.text = "\(article.byline)\n\(article.published_date)"
-        
+        if mergeSections == true {
+            let sectionPredicate = NSPredicate(format: "section = %@", self.sectionTitles[indexPath.section])
+            let article = self.articles.filter { sectionPredicate.evaluate(with: $0)}[indexPath.row]
+            
+            cell.titleLabel.text = article.title
+            
+            if article.per_facet.count > 0 {
+                cell.abstractLabel.text = article.abstract + " " + article.per_facet.joined(separator: " ")
+            }
+            else {
+                cell.abstractLabel.text = article.abstract
+            }
+            
+            cell.bylineAndDateLabel.text = "\(article.byline)\n\(article.published_date)"
+            
+            return cell
+            
+        } else {
+            let filteredPredicate = NSPredicate(format: "apiSection = %@", self.endpoint[indexPath.section])
+            let article = self.articles.filter { filteredPredicate.evaluate(with: $0) }[indexPath.row]
+            cell.titleLabel.text = article.title
         return cell
+    }
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -92,7 +118,7 @@ class ArticleTableViewController: UITableViewController, UISearchBarDelegate {
     
     func applyPredicate(search: String) {
         let predicate = NSPredicate(format:"ANY per_facet contains[c] %@", search, search, search)
-        
+        // let predicate = NSPredicate(format:"ANY per_facet contains[c] %@", "ANY byline contains[c] %@", search, search)
         self.articles = self.allArticles.filter { predicate.evaluate(with: $0) }
         self.tableView.reloadData()
     }
@@ -108,9 +134,9 @@ class ArticleTableViewController: UITableViewController, UISearchBarDelegate {
             self.title = self.defaultTitle
         }
     }
-
+    
     // MARK: - UISearchBar Delegate
-
+    
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if let text = searchBar.text {
             self.search(text)
@@ -142,5 +168,6 @@ class ArticleTableViewController: UITableViewController, UISearchBarDelegate {
             print("Create sections based on the originating API endpoint")
             self.mergeSections = false
         }
+        self.tableView.reloadData()
     }
 }

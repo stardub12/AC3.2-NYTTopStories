@@ -59,7 +59,8 @@ class Article : NSObject {
         }
     }
     
-    static func parseArticles(from arr:[[String:Any]]) -> [Article] {
+    //added a call to parse sections
+    static func parseArticles(from arr:[[String:Any]], filtered: String) -> [Article] {
         var articles = [Article]()
         for articleDict in arr {
             if let article = Article(from: articleDict) {
