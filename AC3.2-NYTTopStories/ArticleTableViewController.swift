@@ -41,7 +41,7 @@ class ArticleTableViewController: UITableViewController, UISearchBarDelegate {
         self.tableView.estimatedRowHeight = 200
         self.tableView.rowHeight = UITableViewAutomaticDimension
         
-        for index in self.endpoint { //add keywords into the url
+        for index in endpoint { //add keywords into the url
             APIRequestManager.manager.getData(endPoint: "https://api.nytimes.com/svc/topstories/v2/\(index).json?api-key=f41c1b23419a4f55b613d0a243ed3243")  { (data: Data?) in
                 if let validData = data {
                     if let jsonData = try? JSONSerialization.jsonObject(with: validData, options:[]) {
@@ -68,7 +68,7 @@ class ArticleTableViewController: UITableViewController, UISearchBarDelegate {
         if mergeSections == true { //switch toggle
             return self.sectionTitles.count
         } else {
-            return endpoint.count
+            return endpoint.count //return 3 sections
         }
     }
     
@@ -105,7 +105,7 @@ class ArticleTableViewController: UITableViewController, UISearchBarDelegate {
             return cell
             
         } else {
-            let filteredPredicate = NSPredicate(format: "apiSection = %@", self.endpoint[indexPath.section])
+            let filteredPredicate = NSPredicate(format: "filtered = %@", self.endpoint[indexPath.section])
             let article = self.articles.filter { filteredPredicate.evaluate(with: $0) }[indexPath.row]
             cell.titleLabel.text = article.title
         return cell
